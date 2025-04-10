@@ -6,7 +6,7 @@ import google.generativeai as genai
 app = Flask(__name__)
 
 # Configure Gemini API - IMPORTANT: Replace with your actual API key
-genai.configure(api_key="AIzaSyApKMsdarYlR4kO7scr7M2D5IY5jQoqnDc")
+genai.configure(api_key=os.getenv("API_KEY"))
 
 @app.route('/')
 def home():
