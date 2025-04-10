@@ -1,5 +1,5 @@
 flask
-openai
 youtube_transcript_api
 transformers
 torch
+gunicorn
