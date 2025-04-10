@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Insights Pro</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    
+    <!-- AOS Animation Library -->
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #ff0000;
+            --secondary-color: #0072ff;
+            --accent-color: #ff6b6b;
+            --dark-color: #2d3748;
+            --light-color: #f8f9fa;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .bg-glass {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 12px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.17);
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header-gradient {
+            background: linear-gradient(to right, #ff0000, #ff7b7b);
+            color: white;
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .button-3d {
+            position: relative;
+            transition: all 0.3s ease;
+            transform-style: preserve-3d;
+            overflow: hidden;
+        }
+        
+        .button-3d:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .button-3d:active {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .button-3d::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transform: translateX(-100%);
+            transition: 0.6s;
+        }
+        
+        .button-3d:hover::before {
+            transform: translateX(100%);
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .slide-in-right {
+            animation: slideInRight 0.5s ease-in-out;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .custom-control {
+            border: none;
+            border-bottom: 2px solid #dee2e6;
+            border-radius: 0;
+            padding: 12px 5px;
+            transition: all 0.3s;
+            background-color: transparent;
+        }
+        
+        .custom-control:focus {
+            border-color: var(--secondary-color);
+            box-shadow: none;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        .summary-result-box, .translation-result-box, .question-result-box {
+            min-height: 150px;
+            transition: all 0.5s ease;
+            overflow: hidden;
+        }
+        
+        .loading-animation {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 150px;
+        }
+        
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 5px solid #FFF;
+            border-bottom-color: var(--secondary-color);
+            border-radius: 50%;
+            display: inline-block;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+        
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .language-switch-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Language toggle switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 120px;
+            height: 34px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: var(--accent-color);
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(85px);
+        }
+        
+        .toggle-labels {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+            box-sizing: border-box;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .toggle-labels span:last-child {
+            opacity: 0;
+        }
+        
+        input:checked ~ .toggle-labels span:first-child {
+            opacity: 0;
+        }
+        
+        input:checked ~ .toggle-labels span:last-child {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background Elements -->
+    <div class="position-fixed w-100 h-100" style="z-index: -1; overflow: hidden;">
+        <div class="position-absolute rounded-circle bg-primary opacity-10" 
+             style="width: 300px; height: 300px; top: -150px; right: -150px; filter: blur(90px);"></div>
+        <div class="position-absolute rounded-circle bg-danger opacity-10" 
+             style="width: 500px; height: 500px; bottom: -250px; left: -200px; filter: blur(90px);"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark bg-opacity-75 py-3 mb-4">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="#">
+                <i class="fab fa-youtube text-danger me-2"></i>
+                <span>YouTube Insights Pro</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="container app-container mb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <!-- Main Card -->
+                <div class="card bg-glass shadow-lg border-0 overflow-hidden" data-aos="zoom-in" data-aos-duration="800">
+                    <!-- Header -->
+                    <div class="header-gradient p-4">
+                        <div class="d-flex align-items-center">
+                            <div class="floating me-3">
+                                <i class="fas fa-chart-line fa-2x"></i>
+                            </div>
+                            <div>
+                                <h2 class="mb-0 fw-bold">YouTube Video Analysis</h2>
+                                <p class="mb-0 opacity-75">Summarize, translate, and ask questions about any YouTube video</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Body -->
+                    <div class="card-body p-4">
+                        <!-- URL Input Section -->
+                        <div class="mb-4 p-3 bg-light bg-opacity-50 rounded-3" data-aos="fade-up" data-aos-delay="200">
+                            <label for="videoUrl" class="form-label fw-bold">
+                                <i class="fas fa-link me-2 text-secondary"></i>YouTube Video URL
+                            </label>
+                            <div class="input-group mb-3">
+                                <span class="input-group-text bg-white">
+                                    <i class="fab fa-youtube text-danger"></i>
+                                </span>
+                                <input type="url" class="form-control custom-control" id="videoUrl" 
+                                       placeholder="https://www.youtube.com/watch?v=...">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <!-- Summary Section -->
+                            <div class="col-md-6 mb-4" data-aos="fade-right" data-aos-delay="400">
+                                <div class="card h-100 card-hover shadow-sm border-0">
+                                    <div class="card-header bg-white py-3">
+                                        <h5 class="card-title mb-0">
+                                            <i class="fas fa-file-alt me-2 text-primary"></i>Video Summary
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <button class="btn btn-primary w-100 mb-3 button-3d" onclick="summarize()">
+                                            <i class="fas fa-magic me-2"></i>Generate Summary
+                                        </button>
+                                        
+                                        <div id="summaryResult" class="summary-result-box p-3 bg-light rounded">
+                                            <p class="text-muted text-center mb-0">Your video summary will appear here</p>
+                                        </div>
+                                        
+                                        <!-- Translation Section -->
+                                        <div id="translationSection" class="mt-4 d-none fade-in">
+                                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                                <h6 class="mb-0 fw-bold text-danger">
+                                                    <i class="fas fa-language me-2"></i>Hindi Translation
+                                                </h6>
+                                                <button id="translateBtn" onclick="translateToHindi()" 
+                                                        class="btn btn-sm btn-danger button-3d">
+                                                    <i class="fas fa-sync-alt me-1"></i>Translate
+                                                </button>
+                                            </div>
+                                            
+                                            <div class="language-switch-container mb-3 d-none" id="languageSwitchContainer">
+                                                <label class="toggle-switch mx-auto">
+                                                    <input type="checkbox" id="languageToggle" onchange="toggleTranslation()">
+                                                    <span class="toggle-slider"></span>
+                                                    <div class="toggle-labels">
+                                                        <span>English</span>
+                                                        <span>हिंदी</span>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                            
+                                            <div id="translationResult" class="translation-result-box p-3 bg-light rounded d-none">
+                                                <p class="text-muted text-center mb-0">Hindi translation will appear here</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Q&A Section -->
+                            <div class="col-md-6 mb-4" data-aos="fade-left" data-aos-delay="600">
+                                <div class="card h-100 card-hover shadow-sm border-0">
+                                    <div class="card-header bg-white py-3">
+                                        <h5 class="card-title mb-0">
+                                            <i class="fas fa-question-circle me-2 text-success"></i>Ask About the Video
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="mb-3">
+                                            <div class="input-group">
+                                                <span class="input-group-text bg-white">
+                                                    <i class="fas fa-search text-success"></i>
+                                                </span>
+                                                <input type="text" class="form-control custom-control" id="question" 
+                                                       placeholder="Ask a specific question about the video">
+                                            </div>
+                                        </div>
+                                        
+                                        <button onclick="askQuestion()" class="btn btn-success w-100 mb-3 button-3d">
+                                            <i class="fas fa-brain me-2"></i>Get Answer
+                                        </button>
+                                        
+                                        <div id="questionResult" class="question-result-box p-3 bg-light rounded">
+                                            <p class="text-muted text-center mb-0">Answers to your questions will appear here</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div class="card-footer bg-dark text-center py-3 text-white">
+                        <p class="mb-0 small">
+                            <i class="fas fa-robot me-2 pulse"></i>
+                            Powered by YouTube Transcript API and Google Gemini AI
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Axios for HTTP requests -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    
+    <!-- AOS Animation Library -->
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+
+    <script>
+        // Initialize AOS animation library
+        AOS.init({
+            once: true,
+            duration: 800
+        });
+        
+        // Store the original summary for easy translation access
+        let currentSummary = "";
+        let currentTranslation = "";
+        let isShowingTranslation = false;
+
+        function displayError(elementId, message) {
+            const resultElement = document.getElementById(elementId);
+            resultElement.innerHTML = `
+                <div class="alert alert-danger mb-0 slide-in-right" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>${message}
+                </div>
+            `;
+        }
+
+        function displayLoading(elementId) {
+            const resultElement = document.getElementById(elementId);
+            resultElement.innerHTML = `
+                <div class="loading-animation">
+                    <span class="loader"></span>
+                </div>
+            `;
+        }
+
+        function displaySuccess(elementId, message) {
+            const resultElement = document.getElementById(elementId);
+            resultElement.innerHTML = `
+                <div class="fade-in">
+                    ${message}
+                </div>
+            `;
+        }
+
+        function summarize() {
+            const videoUrl = document.getElementById('videoUrl').value;
+            const summaryResult = document.getElementById('summaryResult');
+            const translationSection = document.getElementById('translationSection');
+            const translationResult = document.getElementById('translationResult');
+            const languageSwitchContainer = document.getElementById('languageSwitchContainer');
+            
+            // Reset state
+            currentSummary = "";
+            currentTranslation = "";
+            isShowingTranslation = false;
+            translationSection.classList.add('d-none');
+            translationResult.classList.add('d-none');
+            languageSwitchContainer.classList.add('d-none');
+            
+            // Display loading state with animation
+            displayLoading('summaryResult');
+
+            if (!videoUrl) {
+                displayError('summaryResult', 'Please enter a YouTube video URL');
+                return;
+            }
+
+            axios.post('/summarize', { video_url: videoUrl })
+                .then(response => {
+                    // Store the summary for later translation
+                    currentSummary = response.data.summary;
+                    displaySuccess('summaryResult', currentSummary);
+                    
+                    // Show translation option with animation
+                    setTimeout(() => {
+                        translationSection.classList.remove('d-none');
+                    }, 300);
+                })
+                .catch(error => {
+                    const errorMessage = error.response?.data?.error || 'An unexpected error occurred';
+                    displayError('summaryResult', errorMessage);
+                });
+        }
+
+        function translateToHindi() {
+            const translationResult = document.getElementById('translationResult');
+            const languageSwitchContainer = document.getElementById('languageSwitchContainer');
+            
+            // Check if we already have a summary to translate
+            if (!currentSummary) {
+                displayError('translationResult', 'Please generate a summary first');
+                return;
+            }
+            
+            // Display loading state
+            translationResult.classList.remove('d-none');
+            displayLoading('translationResult');
+
+            axios.post('/translate', { text: currentSummary })
+                .then(response => {
+                    // Store the translation
+                    currentTranslation = response.data.translated_text;
+                    displaySuccess('translationResult', currentTranslation);
+                    
+                    // Show toggle switch
+                    languageSwitchContainer.classList.remove('d-none');
+                })
+                .catch(error => {
+                    const errorMessage = error.response?.data?.error || 'An unexpected error occurred during translation';
+                    displayError('translationResult', errorMessage);
+                });
+        }
+
+        function toggleTranslation() {
+            const summaryResult = document.getElementById('summaryResult');
+            const languageToggle = document.getElementById('languageToggle');
+            
+            // Check if translation exists
+            if (!currentTranslation) {
+                return;
+            }
+
+            // If checked, show Hindi
+            if (languageToggle.checked) {
+                displaySuccess('summaryResult', currentTranslation);
+                isShowingTranslation = true;
+            } else {
+                // Show English
+                displaySuccess('summaryResult', currentSummary);
+                isShowingTranslation = false;
+            }
+        }
+
+        function askQuestion() {
+            const videoUrl = document.getElementById('videoUrl').value;
+            const question = document.getElementById('question').value;
+            const questionResult = document.getElementById('questionResult');
+            
+            // Display loading state
+            displayLoading('questionResult');
+
+            if (!videoUrl) {
+                displayError('questionResult', 'Please enter a YouTube video URL');
+                return;
+            }
+
+            if (!question) {
+                displayError('questionResult', 'Please enter a question');
+                return;
+            }
+
+            axios.post('/ask', { video_url: videoUrl, question: question })
+                .then(response => {
+                    displaySuccess('questionResult', response.data.answer);
+                })
+                .catch(error => {
+                    const errorMessage = error.response?.data?.error || 'An unexpected error occurred';
+                    displayError('questionResult', errorMessage);
+                });
+        }
+    </script>
+</body>
+</html>
